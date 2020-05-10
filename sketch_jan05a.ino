@@ -1,9 +1,11 @@
 #include "CdTimer.h"
 #include "CdDisplay.h"
-int button_hour = 13;
-int button_min = 12;
-int button_white = 11;
+#include "CdTone.h"
 
+const int button_hour = 13;
+const int button_min = 12;
+const int button_white = 11;
+const int tonePin = 10;
 
 void Clock(void);   //プロトタイプ宣言
 
@@ -14,12 +16,14 @@ void Switch_White(void);
 
 CdTimer cd_timer = CdTimer(1);
 CdDisplay cddisplay = CdDisplay();
+CdTone cdtone = CdTone(tonePin);
 
 unsigned long previousTime = 0;   //基準時間
 bool BlinkOnFlag = false;
 byte hour2 = 0, hour1 = 0, min2 = 0, min1 = 0 , sec2 = 0, sec1 = 0; //時、分、秒の初期化
 void setup() {
   cddisplay.setup();
+  cdtone.setup();
   //Serial.begin(9800);
 }
 void loop() {
@@ -77,6 +81,7 @@ void Switch_Min(void) {      //分のスイッチ
   if (millis() - debounce > 20 ) {
     if (sw_state == false) {
       sw_state = true;
+      cdtone.ringingDo();
       min1++;
       if (min1 == 10) {
         min1 = 0;
@@ -103,6 +108,7 @@ void Switch_Hour(void) {     //時のスイッチ
   if (millis() - debounce > 20 ) {
     if (sw_state == false) {
       sw_state = true;
+      cdtone.ringingDo();
       hour1++;
       if (hour1 == 10) {
         hour1 = 0;
@@ -125,6 +131,7 @@ void Switch_White(void) {     //白スイッチ
   if (millis() - debounce > 20 ) {
     if (sw_state == false) {
       sw_state = true;
+      cdtone.ringingDo();
       hour1++;
       if (hour1 == 10) {
         hour1 = 0;
