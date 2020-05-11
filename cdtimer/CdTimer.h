@@ -19,7 +19,7 @@ class CdTimer
     int currentMode = 1;
     
     unsigned long preparationTime, workoutTime, restTime;//millisecond
-    unsigned long startTime, countTime;//millisecond
+    unsigned long debounce, countTime;//millisecond
 
     void tenSecTogo(void);
     void threeSecToGo(void);

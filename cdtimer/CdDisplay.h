@@ -42,5 +42,7 @@ class CdDisplay
       boolean dotOnFlag2,
       boolean dotOnFlag1
     );
+
+    void renderBy4Number(int num4);
 };
 #endif

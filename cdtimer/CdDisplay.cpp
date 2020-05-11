@@ -64,3 +64,18 @@ void CdDisplay::render(
     Seg_count = 0;
   }
 }
+
+void CdDisplay::renderBy4Number(int num4)
+{
+  
+  render(
+  1,
+  2,
+  3,
+  num4,
+  false,
+  true,
+  false,
+  false
+  );
+}

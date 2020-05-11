@@ -5,9 +5,9 @@
 
 CdTimer::CdTimer(const int number)
 {
-  preparationTime = 10 * 1000;
-  workoutTime = 15 * 1000;
-  restTime = 15 * 1000;
+  preparationTime = 9 * 1000;
+  workoutTime = 3 * 1000;
+  restTime = 3 * 1000;
 
   countReset();
   
@@ -20,61 +20,73 @@ void CdTimer::countReset(void)
   currentMode = modePreparation;
   currentSetCount = 1;
   countTime = preparationTime;
+  debounce = 0;
   return;
 }
 
 void CdTimer::countStart(void)
 {
   countingFlag = true;
-  startTime = millis();
+  countTime = preparationTime;
+  debounce = millis();
   return;
 }
 
 void CdTimer::countPause(void)
 {
   countingFlag = !countingFlag;
+  debounce = millis();
   return;
 }
 
 void CdTimer::countEnd(void)
 {
-  
-  countReset();
+  countingFlag = false;
+  //countReset();
   return;
 }
 
 
 void CdTimer::preparationFunc(void)
 {
-  countTime = preparationTime - (millis() - startTime);
-  if(ceil(countTime/1000) <= 0){
+  countTime -= millis() - debounce;
+  if(countTime <= 0){
+    debounce = millis();
+    countTime = workoutTime;
     currentMode = modeWorkout;
     return;
   }
+  debounce = millis();
   return;
 }
 
 void CdTimer::workoutFunc(void)
 {
-  countTime = millis() - startTime - preparationTime;
-  if(ceil(countTime/1000) >= workoutTime){
+  countTime -= millis() - debounce;
+  if(countTime <= 0){
+    debounce = millis();
+    countTime = restTime;
     currentMode = modeRest;
     return;
   }
+  debounce = millis();
   return;
 }
 
 void CdTimer::restFunc(void)
 {
-  countTime = workoutTime - (millis() - startTime - preparationTime);
-  if(ceil(countTime/1000) <= 0){
+  countTime -= millis() - debounce;
+  if(countTime <= 0){
     currentSetCount++;
     if(currentSetCount > totalSetCount){
       countEnd();
       return;
     }
+    debounce = millis();
+    countTime = workoutTime;
     currentMode = modeWorkout;
   }
+  debounce = millis();
   return;
 }
 

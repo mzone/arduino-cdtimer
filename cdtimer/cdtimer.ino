@@ -25,48 +25,13 @@ void setup() {
   cddisplay.setup();
   cdtone.setup();
   cd_timer.countStart();
-  Serial.begin(9800);
 }
 void loop() {
-  Clock();
-  cddisplay.render(hour2, hour1, min2, min1, BlinkOnFlag, !BlinkOnFlag, BlinkOnFlag, !BlinkOnFlag);
+  cddisplay.renderBy4Number(cd_timer.getDisplayTime());
   Switch_Check();
   cd_timer.loop();
-  
-  Serial.println(cd_timer.getDisplayTime());
 }
 
-void Clock(void) {
-  if (millis() - previousTime > 1000) {   //プログラムが経過した時間が1秒経ったら
-    previousTime = millis();   //基準時間に現在時間を代入
-    sec1++;     //秒の1桁目インクリメント
-    if (sec1 >= 10) {    //10秒の時
-      sec1 = 0;   //Reset
-      sec2++;   //秒の２桁目インクリメント
-    }
-    if (sec2 >= 6) {
-      sec2 = 0;
-      min1++;   //分の1桁目インクリメント
-    }
-    if (min1 >= 10) {
-      min1 = 0;
-      min2++;   //分の２桁目インクリメント
-    }
-    if (min2 >= 6) {
-      min2 = 0;
-      hour1++;   //時の1桁目インクリメント
-    }
-    if (hour1 >= 10) {
-      hour1 = 0;
-      hour2++;   //時の２桁目インクリメント
-    }
-    if (hour2 == 2 && hour1 == 4) {   //24時になったら
-      hour1 = 0;
-      hour2 = 0;   //Reset
-    }
-    BlinkOnFlag = !BlinkOnFlag;
-  }
-}
 
 void Switch_Check(void) {
   Switch_Min();
@@ -85,20 +50,6 @@ void Switch_Min(void) {      //分のスイッチ
       sw_state = true;
       cdtone.ringingDo();
       cd_timer.countStart();
-      min1++;
-      if (min1 == 10) {
-        min1 = 0;
-        min2++;
-      }
-      if (min2 == 6 && min1 == 0) {
-        min2 = 0;
-        min1 = 0;
-        hour1++;
-      }
-      if ( hour2 == 2 && hour1 == 4) {
-        hour2 = 0;
-        hour1 = 0;
-      }
     }
   } else sw_state = false;
 }
@@ -113,15 +64,6 @@ void Switch_Hour(void) {     //時のスイッチ
       sw_state = true;
       cdtone.ringingDo();
       cd_timer.countPause();
-      hour1++;
-      if (hour1 == 10) {
-        hour1 = 0;
-        hour2++;
-      }
-      if ( hour2 == 2 && hour1 == 4) {
-        hour2 = 0;
-        hour1 = 0;
-      }
     }
   } else sw_state = false;
 }
