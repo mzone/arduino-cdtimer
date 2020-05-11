@@ -24,14 +24,16 @@ byte hour2 = 0, hour1 = 0, min2 = 0, min1 = 0 , sec2 = 0, sec1 = 0; //時、分�
 void setup() {
   cddisplay.setup();
   cdtone.setup();
-  //Serial.begin(9800);
+  cd_timer.countStart();
+  Serial.begin(9800);
 }
 void loop() {
   Clock();
   cddisplay.render(hour2, hour1, min2, min1, BlinkOnFlag, !BlinkOnFlag, BlinkOnFlag, !BlinkOnFlag);
   Switch_Check();
-  cd_timer.update();
-  //Serial.println(cd_timer.getTotal());
+  cd_timer.loop();
+  
+  Serial.println(cd_timer.getDisplayTime());
 }
 
 void Clock(void) {
@@ -82,6 +84,7 @@ void Switch_Min(void) {      //分のスイッチ
     if (sw_state == false) {
       sw_state = true;
       cdtone.ringingDo();
+      cd_timer.countStart();
       min1++;
       if (min1 == 10) {
         min1 = 0;
@@ -109,6 +112,7 @@ void Switch_Hour(void) {     //時のスイッチ
     if (sw_state == false) {
       sw_state = true;
       cdtone.ringingDo();
+      cd_timer.countPause();
       hour1++;
       if (hour1 == 10) {
         hour1 = 0;
@@ -132,15 +136,7 @@ void Switch_White(void) {     //白スイッチ
     if (sw_state == false) {
       sw_state = true;
       cdtone.ringingDo();
-      hour1++;
-      if (hour1 == 10) {
-        hour1 = 0;
-        hour2++;
-      }
-      if ( hour2 == 2 && hour1 == 4) {
-        hour2 = 0;
-        hour1 = 0;
-      }
+      cd_timer.countReset();
     }
   } else sw_state = false;
 }
