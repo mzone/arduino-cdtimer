@@ -20,6 +20,6 @@ class CdTone
     CdTone(int inputPin);
     void setup(void);
     void ringing(int ringingTone, int ringingToneTime);
-    void ringingDo(void);
+    void ringingPushButton(void);
 };
 #endif

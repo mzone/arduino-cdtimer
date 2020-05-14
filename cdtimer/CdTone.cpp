@@ -13,6 +13,6 @@ void CdTone::ringing(int ringingTone, int ringingToneTime) {
   tone(outPutPin, ringingTone, ringingToneTime);
 }
 
-void CdTone::ringingDo(void) {
+void CdTone::ringingPushButton(void) {
   ringing(tones[5], 100);
 }

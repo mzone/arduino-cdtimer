@@ -1,84 +1,63 @@
 #include "CdTimer.h"
 #include "CdDisplay.h"
 #include "CdTone.h"
+#include "MyButton.h"
 
-const int button_hour = 13;
-const int button_min = 12;
-const int button_white = 11;
-const int tonePin = 10;
+const int button_start_pin = 12;
+const int button_stop_pin = 13;
+MyButton button_start = MyButton(button_start_pin, &Button_Start_func);
+MyButton button_stop = MyButton(button_stop_pin, &Button_Stop_func);
 
-void Clock(void);   //プロトタイプ宣言
+const int buttonAmount = 2;
+MyButton* buttons[buttonAmount] = {
+  &button_start,
+  &button_stop
+};
+
+const int tone_pin = 10;
+
+const int global_mode_stop = 1;
+const int global_mode_play = 2;
+const int global_mode_pause = 3;
+const int global_mode_setting_workout = 3;
 
 void Switch_Check(void);
-void Switch_Min(void);
-void Switch_Hour(void);
-void Switch_White(void);
+void Switch_Start(void);
+void Switch_Start_func(void);
+void Switch_Stop(void);
+void Switch_Stop_fun(void);
 
 CdTimer cd_timer = CdTimer(1);
 CdDisplay cddisplay = CdDisplay();
-CdTone cdtone = CdTone(tonePin);
+CdTone cdtone = CdTone(tone_pin);
 
-unsigned long previousTime = 0;   //基準時間
-bool BlinkOnFlag = false;
-byte hour2 = 0, hour1 = 0, min2 = 0, min1 = 0 , sec2 = 0, sec1 = 0; //時、分、秒の初期化
 void setup() {
+  Serial.begin(9600);
   cddisplay.setup();
   cdtone.setup();
   cd_timer.countStart();
 }
 void loop() {
   cddisplay.renderBy4Number(cd_timer.getDisplayTime());
-  Switch_Check();
   cd_timer.loop();
-}
 
-
-void Switch_Check(void) {
-  Switch_Min();
-  Switch_Hour();
-  Switch_White();
-}
-
-void Switch_Min(void) {      //分のスイッチ
-  static bool sw_state = false;
-  static long debounce = 0;
-  if (digitalRead(button_min) == LOW) {
-    debounce = millis();
+  for (int i = 0; i < buttonAmount; i++){
+    buttons[i]->read();
   }
-  if (millis() - debounce > 20 ) {
-    if (sw_state == false) {
-      sw_state = true;
-      cdtone.ringingDo();
-      cd_timer.countStart();
-    }
-  } else sw_state = false;
-}
-void Switch_Hour(void) {     //時のスイッチ
-  static bool sw_state = false;
-  static long debounce = 0;
-  if (digitalRead(button_hour) == LOW) {
-    debounce = millis();
-  }
-  if (millis() - debounce > 20 ) {
-    if (sw_state == false) {
-      sw_state = true;
-      cdtone.ringingDo();
-      cd_timer.countPause();
-    }
-  } else sw_state = false;
 }
 
-void Switch_White(void) {     //白スイッチ
-  static bool sw_state = false;
-  static long debounce = 0;
-  if (digitalRead(button_white) == LOW) {
-    debounce = millis();
+
+void Button_Start_func(MyButton* button) {
+  if(button->pressed){
+    Serial.println("pressed"); 
   }
-  if (millis() - debounce > 20 ) {
-    if (sw_state == false) {
-      sw_state = true;
-      cdtone.ringingDo();
-      cd_timer.countReset();
-    }
-  } else sw_state = false;
+  if(button->longPressed){
+    Serial.println("longPressed"); 
+  }
+  
+  //cd_timer.countStart();
+}
+
+void Button_Stop_func(MyButton* button) {
+  cd_timer.countPause();
 }
