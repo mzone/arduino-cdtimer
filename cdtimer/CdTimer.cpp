@@ -5,7 +5,6 @@
 
 CdTimer::CdTimer(const int number)
 {
-  preparationTime = 9 * 1000;
   workoutTime = 3 * 1000;
   restTime = 3 * 1000;
 
@@ -91,7 +90,7 @@ void CdTimer::restFunc(void)
 }
 
 
-void CdTimer::loop(void)
+void CdTimer::read(void)
 {
   if(!countingFlag) {
     return;

@@ -16,10 +16,10 @@ MyButton* buttons[buttonAmount] = {
 
 const int tone_pin = 10;
 
-const int global_mode_stop = 1;
-const int global_mode_play = 2;
-const int global_mode_pause = 3;
-const int global_mode_setting_workout = 3;
+const int globalModePlay = 1;
+const int globalModeSetting = 2;
+
+int currentGlobalMode = globalModeStop;
 
 void Switch_Check(void);
 void Switch_Start(void);
@@ -27,7 +27,10 @@ void Switch_Start_func(void);
 void Switch_Stop(void);
 void Switch_Stop_fun(void);
 
+void Change_Global_Mode(void);
+
 CdTimer cd_timer = CdTimer(1);
+CdSetting cd_setting = CdSetting();
 CdDisplay cddisplay = CdDisplay();
 CdTone cdtone = CdTone(tone_pin);
 
@@ -38,26 +41,41 @@ void setup() {
   cd_timer.countStart();
 }
 void loop() {
-  cddisplay.renderBy4Number(cd_timer.getDisplayTime());
-  cd_timer.loop();
-
+  if(currentGlobalMode == globalModePlay) {
+    cd_timer.read();
+  } else if(currentGlobalMode == globalModeSetting) {
+    
+  }
+  
   for (int i = 0; i < buttonAmount; i++){
     buttons[i]->read();
   }
+
+  //画面描画
+  cddisplay.renderBy4Number(cd_timer.getDisplayTime());
 }
 
 
 void Button_Start_func(MyButton* button) {
   if(button->pressed){
     Serial.println("pressed"); 
+    if(currentGlobalMode == globalModePlay){
+      cd_timer.countStart();
+    } else if(currentGlobalMode == globalModeSetting) {
+      cd_timer.setSettings();
+    }
   }
-  if(button->longPressed){
-    Serial.println("longPressed"); 
-  }
-  
-  //cd_timer.countStart();
 }
 
 void Button_Stop_func(MyButton* button) {
-  cd_timer.countPause();
+  //cd_timer.countPause();
+  changeGlobalMode();
+}
+
+void Change_Global_Mode() {
+  if(currentGlobalMode == globalModePlay) {
+    currentGlobalMode = globalModeSetting;
+  } else if(currentGlobalMode == globalModeSetting) {
+    cd_setting.nextSetting
+  }
 }

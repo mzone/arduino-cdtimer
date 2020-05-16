@@ -6,6 +6,7 @@ class CdTimer
 {
   private:
     const int totalSetCount = 3;
+    
     const int modePreparation = 1;
     const int modeWorkout = 2;
     const int modeRest = 3;
@@ -35,7 +36,12 @@ class CdTimer
     void countReset(void);
     void countStart(void);
     void countPause(void);
-    void loop(void);
+    void read(void);
+    
+    void setSetCount(int count);
+    void setWorkoutTime(unsigned long setTime);
+    void setRestTime(unsigned long setTime);
+    
     int getDisplayTime(void);
     int getCurrentMode(void);
     int getTotalSetCount(void);
