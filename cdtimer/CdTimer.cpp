@@ -5,6 +5,7 @@
 
 CdTimer::CdTimer(const int number)
 {
+  preparationTime = 3 * 1000;
   workoutTime = 3 * 1000;
   restTime = 3 * 1000;
 

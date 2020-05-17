@@ -1,6 +1,7 @@
 #include "CdTimer.h"
 #include "CdDisplay.h"
 #include "CdTone.h"
+#include "CdSetting.h"
 #include "MyButton.h"
 
 const int button_start_pin = 12;
@@ -19,7 +20,7 @@ const int tone_pin = 10;
 const int globalModePlay = 1;
 const int globalModeSetting = 2;
 
-int currentGlobalMode = globalModeStop;
+int currentGlobalMode = globalModePlay;
 
 void Switch_Check(void);
 void Switch_Start(void);
@@ -38,7 +39,6 @@ void setup() {
   Serial.begin(9600);
   cddisplay.setup();
   cdtone.setup();
-  cd_timer.countStart();
 }
 void loop() {
   if(currentGlobalMode == globalModePlay) {
@@ -53,29 +53,32 @@ void loop() {
 
   //画面描画
   cddisplay.renderBy4Number(cd_timer.getDisplayTime());
+
+  //音を鳴らす
+  cdtone.read();
 }
 
 
 void Button_Start_func(MyButton* button) {
-  if(button->pressed){
-    Serial.println("pressed"); 
-    if(currentGlobalMode == globalModePlay){
-      cd_timer.countStart();
-    } else if(currentGlobalMode == globalModeSetting) {
-      cd_timer.setSettings();
-    }
+  if(button->longPushedFlag){
+    cdtone.ringing(1046, 100);
+    cd_timer.countStart();
+
+  }else if(button->pushedFlag) {
+    cdtone.ringing(2146, 100);
   }
 }
 
 void Button_Stop_func(MyButton* button) {
-  //cd_timer.countPause();
-  changeGlobalMode();
+  if(button->pushedFlag) {
+    cd_timer.countPause();
+    cdtone.ringing(2000, 100);
+  }
 }
 
 void Change_Global_Mode() {
   if(currentGlobalMode == globalModePlay) {
     currentGlobalMode = globalModeSetting;
   } else if(currentGlobalMode == globalModeSetting) {
-    cd_setting.nextSetting
   }
 }

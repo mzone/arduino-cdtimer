@@ -5,19 +5,14 @@
 class MyButton
 {
   private:
-    int lastValue;
-    int puressTime;
-    unsigned long lastDebounceTime;  
-    void (*pCallback)(MyButton*);
-    void puressTimecheck(void);
-  public:
-  String label;
     int pin;
-  int state;
-    bool pressed;
-    bool longPressed;
-    void read();
+    int pushTimeCount=0, pushTime=1000, pushLongTime=10000;
+    void (*pCallback)(MyButton*);
+    int nomalState;
+  public:
     MyButton(int PIN, void (*pCallbackFunction)(MyButton*));
+    bool pushedFlag=false,longPushedFlag=false; 
+    void read();
 };
 
 #endif
