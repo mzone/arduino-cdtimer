@@ -17,17 +17,20 @@ class CdTone
         1046 //ド
       };
 
-    const int lingToneDivisionMute=0;
-    const int lingToneDivisionPush=1;
-    const int lingToneDivisionLongPush=2;
-    int lingToneDivision=lingToneDivisionMute;
+    const int ringToneDivisionMute=0;
+    const int ringToneDivision10secToGo=1;
+    const int ringToneDivisionCountFinish=2;
+    int ringToneDivision=ringToneDivisionMute;
     
+    unsigned long ringStartTime;
+    int ringCount=0;
+    void ringEnd(void);
   public:
     CdTone(int inputPin);
     void setup(void);
     void read(void);
     void ringing(int ringingTone, int ringingToneTime);
-    void setTonePush(void);
-    void setToneLongPush(void);
+    void setTone10secToGo(void);
+    void setToneCountFinish(void);
 };
 #endif

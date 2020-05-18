@@ -12,8 +12,9 @@ class CdTimer
     const int modeRest = 3;
     const bool countUp = true;
     const bool countDown = false;
-    
+
     bool countingFlag = false;
+    
     bool countUpDownDirection = countUp;
     
     int currentSetCount = 1;
@@ -33,6 +34,7 @@ class CdTimer
     
   public:
     CdTimer(int number);
+    
     void countReset(void);
     void countStart(void);
     void countPause(void);

@@ -65,14 +65,21 @@ void CdDisplay::render(
   }
 }
 
-void CdDisplay::renderBy4Number(int num4)
+void CdDisplay::renderBy4Number(int value)
 {
+  int a[ 4 ];
+  
+  //数値の下4桁を取得する
+  a[0] = (value % 10); value /= 10;
+  a[1] = (value % 10); value /= 10;
+  a[2] = (value % 10); value /= 10;
+  a[3] = (value % 10); value /= 10;
   
   render(
-  1,
-  2,
-  3,
-  num4,
+  a[3],
+  a[2],
+  a[1],
+  a[0],
   false,
   true,
   false,
