@@ -34,7 +34,7 @@ void CdTimer::countStart(void)
 
 void CdTimer::countPause(void)
 {
-  countingFlag = false;
+  //countingFlag = false;
   return;
 }
 
@@ -48,48 +48,16 @@ void CdTimer::countEnd(void)
 //カウントダウン
 void CdTimer::preparationFunc(void)
 {
-  countTime -= millis() - debounce;
+    Serial.println(debounce);
+  countTime = preparationTime - (millis() - debounce);
   if(countTime <= -1){
-    debounce = millis();
-    countTime = workoutTime;
     currentMode = modeWorkout;
+    debounce = millis();
     return;
   }
-  debounce = millis();
   return;
 }
 
-//運動
-void CdTimer::workoutFunc(void)
-{
-  countTime -= millis() - debounce;
-  if(countTime <= -1){
-    debounce = millis();
-    countTime = restTime;
-    currentMode = modeRest;
-    return;
-  }
-  debounce = millis();
-  return;
-}
-
-//休憩
-void CdTimer::restFunc(void)
-{
-  countTime -= millis() - debounce;
-  if(countTime <= -1){
-    currentSetCount++;
-    if(currentSetCount > totalSetCount){
-      countEnd();
-      return;
-    }
-    debounce = millis();
-    countTime = workoutTime;
-    currentMode = modeWorkout;
-  }
-  debounce = millis();
-  return;
-}
 
 //ループ処理
 void CdTimer::read(void)
@@ -98,18 +66,17 @@ void CdTimer::read(void)
     return;
   }
   
-
   if(currentMode == modePreparation)
   {
     preparationFunc();
   }else
   if(currentMode == modeWorkout)
   {
-    workoutFunc();
+    //workoutFunc();
   }else
   if(currentMode == modeRest)
   {
-    restFunc();
+    //restFunc();
   }
 
   return;

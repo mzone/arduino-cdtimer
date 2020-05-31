@@ -33,7 +33,21 @@ void Change_Global_Mode(void);
 void PlayCountTone(void);
 int playCountToneHistory=99;
 
-CdTimer cd_timer = CdTimer(1);
+/* timer const */
+
+const int preparationTime = 10 * 1000;
+const int workoutTime = 15 * 1000;
+const int restTime = 15 * 1000;
+int startCountTime = preparationTime;
+unsigned int startTime;
+bool countingFlag = false;
+void timerCountStart(void);
+void timerCountPause(void);
+void timerCountReset(void);
+void timerLoop(void);
+int counter=0;
+bool zeroSound=false;
+
 CdSetting cd_setting = CdSetting();
 CdDisplay cddisplay = CdDisplay();
 CdTone cdtone = CdTone(tone_pin);
@@ -55,16 +69,13 @@ void loop() {
 
   //check mode
   if(currentGlobalMode == globalModePlay) {
-    cd_timer.read();
-    int displayTime = cd_timer.getDisplayTime();
-    PlayCountTone(displayTime);
-    
+    timerLoop();
+    PlayCountTone(counter);
   } else if(currentGlobalMode == globalModeSetting) {
-    displayValue = cd_setting.getDisplayValue();
   }
 
-  cdtone.read();
-  //render(displayValue);
+  //cdtone.read();
+  render(ceil(counter/1000));
 }
 
 void render(int value) {
@@ -88,7 +99,7 @@ void Button_Start_func(MyButton* button) {
   }else if(button->pushedFlag) {
     cdtone.ringing(2146, 50);
     Serial.println("push start button");
-    cd_timer.countStart();
+    timerCountStart();
   }
 }
 
@@ -101,7 +112,7 @@ void Button_Stop_func(MyButton* button) {
   }else if(button->pushedFlag) {
     cdtone.ringing(2000, 50);
     Serial.println("push stop button");
-    cd_timer.countReset();
+    timerCountReset();
     playCountToneHistory=99;
     
   }
@@ -117,20 +128,57 @@ void Change_Global_Mode() {
 //カウントダウントーン再生
 void PlayCountTone(int displayTime)
 {
-  return;
-  if(displayTime == 0 && playCountToneHistory > displayTime){
+  if(displayTime == 1000 && playCountToneHistory > displayTime){
     cdtone.setToneCountFinish();
-    playCountToneHistory = 0;
+    playCountToneHistory = displayTime;
   }
   
-  if(displayTime <= 5 && playCountToneHistory > displayTime){
+  if(displayTime <= 5 * 1000 && playCountToneHistory > displayTime){
     cdtone.ringing(2000, 50);
     playCountToneHistory = displayTime;
   }
   
-  if(displayTime == 10 && playCountToneHistory > 10){
+  if(displayTime == 10 * 1000 && playCountToneHistory > 10 * 1000){
     cdtone.setTone10secToGo();
-    playCountToneHistory = 10;
+    playCountToneHistory = displayTime;
   }
 
+}
+
+
+/* timer func */
+void timerCountStart(void)
+{
+  countingFlag = true;
+  zeroSound = false;
+  startCountTime = preparationTime;
+  startTime = millis();
+  return;
+}
+
+void timerCountPause(void)
+{
+  countingFlag = false;
+  return;
+}
+
+void timerCountReset(void)
+{
+  countingFlag = false;
+  startTime = millis();
+  return;
+}
+
+void timerLoop(void)
+{
+  if(!countingFlag){
+    return;
+  }
+
+  counter = startCountTime - (millis() - startTime);
+
+  //
+  if(counter < 0) {
+    countingFlag = false;
+  }
 }
