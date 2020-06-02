@@ -10,6 +10,5 @@ class CdSetting
     const int settngModeSetCount = 3;
   public:
     CdSetting(void);
-    int getDisplayValue(void);
 };
 #endif

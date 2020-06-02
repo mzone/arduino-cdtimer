@@ -34,11 +34,21 @@ void PlayCountTone(void);
 int playCountToneHistory=99;
 
 /* timer const */
-
-const int preparationTime = 10 * 1000;
+const int preparationTime = 15 * 1000;
 const int workoutTime = 15 * 1000;
 const int restTime = 15 * 1000;
-int startCountTime = preparationTime;
+int countTime = preparationTime;
+
+//mode
+const int modePreparation = 1;
+const int modeWorkout = 2;
+const int modeRest = 3;
+int currentMode = modePreparation;
+
+//timerSet
+int timerSet = 3;
+int currentTimerSet = 1;
+
 unsigned int startTime;
 bool countingFlag = false;
 void timerCountStart(void);
@@ -70,11 +80,10 @@ void loop() {
   //check mode
   if(currentGlobalMode == globalModePlay) {
     timerLoop();
-    PlayCountTone(counter);
   } else if(currentGlobalMode == globalModeSetting) {
   }
 
-  //cdtone.read();
+  cdtone.read();
   render(ceil(counter/1000));
 }
 
@@ -128,19 +137,18 @@ void Change_Global_Mode() {
 //カウントダウントーン再生
 void PlayCountTone(int displayTime)
 {
-  if(displayTime == 1000 && playCountToneHistory > displayTime){
+  int targetTime = ceil(displayTime/1000);
+  if(targetTime == 0 && playCountToneHistory > targetTime){
     cdtone.setToneCountFinish();
-    playCountToneHistory = displayTime;
-  }
-  
-  if(displayTime <= 5 * 1000 && playCountToneHistory > displayTime){
+    playCountToneHistory = targetTime;
+  } else
+  if(targetTime <= 5 && playCountToneHistory > targetTime){
     cdtone.ringing(2000, 50);
-    playCountToneHistory = displayTime;
-  }
-  
-  if(displayTime == 10 * 1000 && playCountToneHistory > 10 * 1000){
+    playCountToneHistory = targetTime;
+  } else
+  if(targetTime == 10 && playCountToneHistory > targetTime){
     cdtone.setTone10secToGo();
-    playCountToneHistory = displayTime;
+    playCountToneHistory = targetTime;
   }
 
 }
@@ -151,7 +159,7 @@ void timerCountStart(void)
 {
   countingFlag = true;
   zeroSound = false;
-  startCountTime = preparationTime;
+  countTime = preparationTime;
   startTime = millis();
   return;
 }
@@ -174,11 +182,38 @@ void timerLoop(void)
   if(!countingFlag){
     return;
   }
-
-  counter = startCountTime - (millis() - startTime);
-
+  
   //
+  counter = countTime - (millis() - startTime);
+  
+  PlayCountTone(counter);
+  
   if(counter < 0) {
-    countingFlag = false;
+    if(currentMode == modePreparation) {
+      countTime = workoutTime;
+      startTime = millis();
+      currentMode = modeWorkout;
+      playCountToneHistory = 99;
+      return;
+    } else if(currentMode == modeWorkout) {
+      countTime = restTime;
+      startTime = millis();
+      currentMode = modeRest;
+      playCountToneHistory = 99;
+      return;
+    } else if(currentMode == modeRest) {
+      currentTimerSet++;
+      //まだセットが残っていたら繰り返し
+     if(currentTimerSet <= timerSet) {
+      countTime = workoutTime;
+      startTime = millis();
+      playCountToneHistory = 99;
+      return;
+     } else {
+      //なければ終了
+      countingFlag = false;
+      return;
+     }
+    }
   }
 }

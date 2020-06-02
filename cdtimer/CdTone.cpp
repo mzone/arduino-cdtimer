@@ -20,9 +20,7 @@ void CdTone::setTone10secToGo(void) {
 }
 
 void CdTone::setToneCountFinish(void) {
-  ringCount=0;
-  ringToneDivision=ringToneDivisionCountFinish;
-  ringStartTime=millis();
+  ringing(3000, 600);
 }
 
 void CdTone::ringEnd(void) {

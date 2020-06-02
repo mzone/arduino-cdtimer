@@ -4,7 +4,3 @@
 
 CdSetting::CdSetting() {
 }
-
-CdSetting::getDisplayValue(void) {
-  return 1;
-}
