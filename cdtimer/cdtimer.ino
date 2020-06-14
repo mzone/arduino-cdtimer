@@ -1,4 +1,3 @@
-#include "CdTimer.h"
 #include "CdDisplay.h"
 #include "CdTone.h"
 #include "CdSetting.h"
